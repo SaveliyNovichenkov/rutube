@@ -10,16 +10,19 @@ export class VideoEntity extends Base {
   name: string
 
   @Column({default:false, name: "is_public"})
-  isPublic: string
+  isPublic: boolean
 
   @Column({default: 0})
-  views?: string
+  views?: number
 
   @Column({default: 0})
-  likes?: string
+  likes?: number
 
   @Column({default: 0})
-  duration?: string
+  dislikes?: number
+
+  @Column({default: 0})
+  duration?: number
 
   @Column({default: "", type: "text"})
   description: string
