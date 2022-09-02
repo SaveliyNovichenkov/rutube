@@ -25,4 +25,7 @@ export class UserDto {
 
   @IsBoolean()
   isVerified: boolean;
+
+  @IsNumber()
+  subscribersCount: number;
 }

@@ -19,6 +19,18 @@ export class UserService {
     private readonly subscriptionRepository: Repository<SubscriptionEntity>,
   ) {}
 
+  async getAll() {
+    return await this.userRepository.find({
+      relations: {
+        videos: true,
+        subscriptions: {
+          toChannel: true,
+          fromUser: true,
+        },
+      },
+    });
+  }
+
   //by-id
   async byId(id: number) {
     const user = await this.userRepository.findOne({
@@ -60,35 +72,27 @@ export class UserService {
     user.description = dto.description;
     user.avatarPath = dto.avatarPath;
     user.isVerified = dto.isVerified;
+    user.subscribersCount = dto.subscribersCount;
 
     return this.userRepository.save(user);
   }
 
   //subscribe
+  async subscriptions() {
+    return this.subscriptionRepository.find({});
+  }
   async subscribe(id: number, channelId: number) {
-    const UserAndChannel = {
+    const data = {
       toChannel: { id: channelId },
       fromUser: { id },
     };
-
-    const isSubscribed = await this.subscriptionRepository.findOneBy(
-      UserAndChannel,
-    );
-
+    const isSubscribed = await this.subscriptionRepository.findOneBy(data);
     if (!isSubscribed) {
-      const newSubscription = await this.subscriptionRepository.create(
-        UserAndChannel,
-      );
+      const newSubscription = await this.subscriptionRepository.create(data);
       await this.subscriptionRepository.save(newSubscription);
       return true;
     }
-
-    await this.subscriptionRepository.delete(UserAndChannel);
+    await this.subscriptionRepository.delete(data);
     return false;
-  }
-
-  //getAll
-  async getAll() {
-    return this.userRepository.find();
   }
 }
