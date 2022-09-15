@@ -23,6 +23,9 @@ export class VideoEntity extends Base {
   @Column({ default: 0 })
   duration?: number;
 
+  @Column({ default: 0 })
+  seconds?: number;
+
   @Column({ default: '', type: 'text' })
   description: string;
 
