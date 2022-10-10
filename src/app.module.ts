@@ -11,17 +11,22 @@ import { AuthModule } from './auth/auth.module';
 import { MediaModule } from './media/media.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
+import { MulterModule } from '@nestjs/platform-express/multer';
+import { join } from 'path';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, '..', 'uploads', 'avatar'),
+      rootPath: join(__dirname, '..', 'uploads', 'avatar'),
     }),
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: getTypeOrmConfig,
+    }),
+    MulterModule.register({
+      dest: './uploads/avatar',
     }),
     UserModule,
     VideoModule,

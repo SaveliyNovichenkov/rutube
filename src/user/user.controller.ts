@@ -6,6 +6,7 @@ import {
   NotFoundException,
   Param,
   Patch,
+  Delete,
   Put,
   UsePipes,
   ValidationPipe,
@@ -52,5 +53,10 @@ export class UserController {
     @Param('channelId') channelId: string,
   ) {
     return this.userService.subscribe(id, +channelId);
+  }
+
+  @Get('subscriptions')
+  async subscriptions() {
+    return this.userService.subscriptions();
   }
 }

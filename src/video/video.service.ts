@@ -154,4 +154,16 @@ export class VideoService {
     video.dislikes++;
     return this.videoRepository.save(video);
   }
+
+  async deleteLikes(id: number) {
+    const video = await this.byId(id);
+    video.likes--;
+    return this.videoRepository.save(video);
+  }
+
+  async deleteDislikes(id: number) {
+    const video = await this.byId(id);
+    video.dislikes--;
+    return this.videoRepository.save(video);
+  }
 }

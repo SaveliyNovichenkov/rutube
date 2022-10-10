@@ -21,7 +21,6 @@ export class MediaController {
 
   @HttpCode(200)
   @Post()
-  @Auth()
   @UseInterceptors(FileInterceptor('media'))
   async uploadMediaFile(
     @UploadedFile() mediaFile: Express.Multer.File,
