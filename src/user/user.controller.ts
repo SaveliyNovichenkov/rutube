@@ -55,6 +55,28 @@ export class UserController {
     return this.userService.subscribe(id, +channelId);
   }
 
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Patch('like/:videoId')
+  @Auth()
+  async likeToVideo(
+    @CurrentUser('id') id: number,
+    @Param('videoId') videoId: string,
+  ) {
+    return this.userService.likeToVideo(id, +videoId);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Patch('dislike/:videoId')
+  @Auth()
+  async dislikeToVideo(
+    @CurrentUser('id') id: number,
+    @Param('videoId') videoId: string,
+  ) {
+    return this.userService.dislikeToVideo(id, +videoId);
+  }
+
   @Get('subscriptions')
   async subscriptions() {
     return this.userService.subscriptions();

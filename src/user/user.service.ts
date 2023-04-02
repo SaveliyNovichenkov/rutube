@@ -9,6 +9,9 @@ import { Repository } from 'typeorm';
 import { SubscriptionEntity } from './subscription.entity';
 import { UserDto } from './user.dto';
 import { genSalt, hash } from 'bcryptjs';
+import { VideoEntity } from 'src/video/video.entity';
+import { DislikeEntity } from './dislike.entity';
+import { LikeEntity } from './like.entity';
 
 @Injectable()
 export class UserService {
@@ -17,6 +20,12 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(SubscriptionEntity)
     private readonly subscriptionRepository: Repository<SubscriptionEntity>,
+    @InjectRepository(LikeEntity)
+    private readonly likeRepository: Repository<LikeEntity>,
+    @InjectRepository(VideoEntity)
+    private readonly videoRepository: Repository<VideoEntity>,
+    @InjectRepository(DislikeEntity)
+    private readonly dislikeRepository: Repository<DislikeEntity>,
   ) {}
 
   async getAll() {
@@ -87,12 +96,69 @@ export class UserService {
       fromUser: { id },
     };
     const isSubscribed = await this.subscriptionRepository.findOneBy(data);
+    const channel = await this.userRepository.findOne({
+      where: {
+        id: channelId,
+      },
+    });
     if (!isSubscribed) {
       const newSubscription = await this.subscriptionRepository.create(data);
+      channel.subscribersCount++;
+      await this.userRepository.save(channel);
       await this.subscriptionRepository.save(newSubscription);
       return true;
     }
+    channel.subscribersCount--;
+    await this.userRepository.save(channel);
     await this.subscriptionRepository.delete(data);
+    return false;
+  }
+
+  async likeToVideo(id: number, videoId: number) {
+    const data = {
+      toVideo: { id: videoId },
+      fromUser: { id },
+    };
+    const isLiked = await this.likeRepository.findOneBy(data);
+    const video = await this.videoRepository.findOne({
+      where: {
+        id: videoId,
+      },
+    });
+    if (!isLiked) {
+      const newLike = await this.likeRepository.create(data);
+      video.likes++;
+      await this.videoRepository.save(video);
+      await this.likeRepository.save(newLike);
+      return true;
+    }
+    video.likes--;
+    await this.videoRepository.save(video);
+    await this.likeRepository.delete(data);
+    return false;
+  }
+
+  async dislikeToVideo(id: number, videoId: number) {
+    const data = {
+      toVideo: { id: videoId },
+      fromUser: { id },
+    };
+    const isDisliked = await this.dislikeRepository.findOneBy(data);
+    const video = await this.videoRepository.findOne({
+      where: {
+        id: videoId,
+      },
+    });
+    if (!isDisliked) {
+      const newDislike = await this.dislikeRepository.create(data);
+      video.dislikes++;
+      await this.videoRepository.save(video);
+      await this.dislikeRepository.save(newDislike);
+      return true;
+    }
+    video.dislikes--;
+    await this.videoRepository.save(video);
+    await this.dislikeRepository.delete(data);
     return false;
   }
 }

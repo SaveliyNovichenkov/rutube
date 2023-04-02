@@ -3,17 +3,17 @@ import { VideoEntity } from '../video/video.entity';
 import { Base } from '../utils/base';
 import { UserEntity } from './user.entity';
 
-@Entity('Subscription')
-export class SubscriptionEntity extends Base {
-  @ManyToOne(() => UserEntity, (user) => user.subscriptions, {
+@Entity('Likes')
+export class LikeEntity extends Base {
+  @ManyToOne(() => UserEntity, (user) => user.likesFromUser, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'from_user_id' })
   fromUser: UserEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.subscriptions, {
+  @ManyToOne(() => VideoEntity, (video) => video.like, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'to_channel_id' })
-  toChannel: UserEntity;
+  @JoinColumn({ name: 'to_video_id' })
+  toVideo: VideoEntity;
 }
